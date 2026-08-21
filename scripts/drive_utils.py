@@ -111,9 +111,12 @@ def upload_to_drive(service, file_path: str, filename: str, log_fn=None) -> dict
     except Exception as e:
         log(f"  ⚠️ ไม่สามารถตรวจสอบไฟล์เดิม: {e}")
 
+    # ตัดนามสกุล .xlsx ออกจากชื่อไฟล์ (เพราะจะแปลงเป็น Google Sheets)
+    sheets_name = filename.replace('.xlsx', '').replace('.XLSX', '')
     file_metadata = {
-        'name': filename,
-        'parents': [OUTPUT_FOLDER_ID]
+        'name': sheets_name,
+        'parents': [OUTPUT_FOLDER_ID],
+        'mimeType': 'application/vnd.google-apps.spreadsheet'
     }
     media = MediaFileUpload(
         file_path,
