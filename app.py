@@ -297,6 +297,7 @@ if run_btn:
                     uploaded = upload_to_drive(service, final_output, auto_name, log_fn=log)
                     drive_link = uploaded.get("webViewLink", "")
                 except Exception as e:
+                    drive_error = str(e)
                     log(f"  ⚠️ อัปโหลด Drive ล้มเหลว: {e}")
 
             set_progress(100, "🎉 เสร็จสมบูรณ์!")
@@ -338,7 +339,8 @@ if run_btn:
                 st.success(f"✅ อัปโหลด Google Drive สำเร็จ")
                 st.markdown(f"[📂 เปิดไฟล์ใน Google Drive]({drive_link})")
             elif upload_gdrive:
-                st.warning("⚠️ อัปโหลด Google Drive ไม่สำเร็จ — ดาวน์โหลดจากปุ่มด้านซ้ายแทน")
+                err_msg = locals().get("drive_error", "ไม่ทราบสาเหตุ")
+                st.warning(f"⚠️ อัปโหลด Google Drive ไม่สำเร็จ — {err_msg}")
 
         st.markdown(
             f"**ไฟล์มี 6 ชีท:** ใบปะหน้า TIKTOK · เงินเข้าบริษัท · STOCK · Data ERP · ABBHTT · TikTok"
