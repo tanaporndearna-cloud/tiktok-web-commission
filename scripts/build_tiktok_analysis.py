@@ -27,6 +27,21 @@ WANTED_COLS = [
     ('เงินเข้าบริษัท',                                'จำนวนเงินที่ชำระทั้งหมด'),
 ]
 
+# ── หมายเหตุอัตโนมัติสำหรับชีทใบปะหน้า TIKTOK ──────────────────────────────
+REMARK_MAP = {
+    'ยอดขาย':                                          'ยอดขาย',
+    'ค่าธรรมเนียมคำสั่งซื้อ':                           'ค่าธรรมเนียมการชำระเงิน / คำสั่งซื้อ',
+    'ค่าคอมมิชชั่น TikTok Shop':                       'ค่าคอมมิชชั่น Platform',
+    'ค่าธรรมเนียมการจัดส่งจริง':                       'ค่าขนส่งสุทธิ',
+    'ส่วนลดค่าธรรมเนียมการจัดส่งจากแพลตฟอร์ม':       'ค่าขนส่งสุทธิ',
+    'ค่าธรรมเนียมการจัดส่งของลูกค้า':                 'ค่าขนส่งสุทธิ',
+    'เงินสนับสนุนการจัดส่ง':                           'ค่าขนส่งสุทธิ',
+    'ยอดรวมเงินคืนหลังหักส่วนลดจากผู้ขาย':            'คืนเงิน / คืนสินค้า',
+    'ค่าธรรมเนียมการจัดส่งสินค้าคืนตามจริง':          'ค่าขนส่งสุทธิ',
+    'เงินคืนสำหรับค่าจัดส่ง':                          'ค่าขนส่งสุทธิ',
+    'ค่าธรรมเนียมสนับสนุนการเติบโตของร้านค้า':        'ค่าธรรมเนียมโปรแกรม / สนับสนุนการขาย',
+}
+
 EXTRA_COLS = [
     'ต้นทุนสินค้า/ต่อชิ้น',
     'ต้นทุนสินค้ารวม',
@@ -290,17 +305,17 @@ def main(input_path: str, log_fn=None):
 
     _r = 3
 
-    # ยอดขาย (row 3)
+    # ยอดขาย (row 3) — ใส่หมายเหตุจาก REMARK_MAP
     _fc(_r, 1, 'รายได้', FILL_T_INC, bold=True)
     _fc(_r, 2, 'ยอดขาย', FILL_T_INC, h='left')
-    _fc(_r, 3, '', FILL_T_INC)
+    _fc(_r, 3, REMARK_MAP.get('ยอดขาย', ''), FILL_T_INC, h='left')  # ← เติมหมายเหตุ
     _fc(_r, 4, _sf(_wl['ยอดขาย'], _SH_MA), FILL_T_INC, fmt=_NUM, h='right')
     _fc(_r, 5, _sf(_wl['ยอดขาย'], _SH_TR),  FILL_T_INC, fmt=_NUM, h='right')
     _fc(_r, 6, f'=SUM(D{_r}:E{_r})', FILL_T_INC, bold=True, fmt=_NUM, h='right')
     _YODKHAI_R = _r
     _r += 1
 
-    # ค่าใช้จ่าย SHOPEE (10 รายการ)
+    # ค่าใช้จ่าย (10 รายการ) — ใส่หมายเหตุจาก REMARK_MAP อัตโนมัติ
     _EXPENSE_ITEMS = [
         'ค่าธรรมเนียมคำสั่งซื้อ',
         'ค่าคอมมิชชั่น TikTok Shop',
@@ -317,7 +332,7 @@ def main(input_path: str, log_fn=None):
     for _ie, _item in enumerate(_EXPENSE_ITEMS):
         _fc(_r, 1, '' if _ie > 0 else 'placeholder', FILL_T_COST)
         _fc(_r, 2, _item, None, h='left')
-        _fc(_r, 3, '', None)
+        _fc(_r, 3, REMARK_MAP.get(_item, ''), None, h='left')  # ← เติมหมายเหตุอัตโนมัติ
         _col_e = _wl.get(_item, '')
         _fc(_r, 4, _sf(_col_e, _SH_MA) if _col_e else 0, None, fmt=_NUM, h='right')
         _fc(_r, 5, _sf(_col_e, _SH_TR)  if _col_e else 0, None, fmt=_NUM, h='right')
@@ -461,7 +476,7 @@ def main(input_path: str, log_fn=None):
     # Column widths
     ws_fp.column_dimensions['A'].width = 24
     ws_fp.column_dimensions['B'].width = 36
-    ws_fp.column_dimensions['C'].width = 12
+    ws_fp.column_dimensions['C'].width = 30
     ws_fp.column_dimensions['D'].width = 18
     ws_fp.column_dimensions['E'].width = 18
     ws_fp.column_dimensions['F'].width = 22
